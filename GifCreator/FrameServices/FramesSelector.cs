@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace GifCreator.FrameServices
 {
+    //Класс для работы с выборкой кадров
     public class FrameSelector
     {
         List<PictureBox> frames;
@@ -25,6 +26,7 @@ namespace GifCreator.FrameServices
             selection = new List<PictureBox>();
             AddEvents();
         }
+        //Добавление каждому существующему кадру обработчика событий нажатия на кнопку
         private void AddEvents()
         {
             foreach (var frame in frames)
@@ -32,6 +34,7 @@ namespace GifCreator.FrameServices
                 frame.MouseClick += Frame_MouseClick;
             }
         }
+        //Отрисовка базы кадра
         private void Frame_Paint(object sender, PaintEventArgs e)
         {
             var frame = (PictureBox)sender;
@@ -40,6 +43,7 @@ namespace GifCreator.FrameServices
             g.FillPath(new SolidBrush(Color.FromArgb(130, 42, 100, 120)), path);
 
         }
+        //Получение геометрии для отрисовки
         private static GraphicsPath GetPath(Size pictureSize)
         {
             Rectangle r = new(0, 0, pictureSize.Width, pictureSize.Height);
@@ -51,10 +55,17 @@ namespace GifCreator.FrameServices
             gp.AddArc(r.X, r.Y + r.Height - diameter, diameter, diameter, 90, 90);
             return gp;
         }
+        //Обработка нажатия клавиш при выбранных кадрах
+        //Здесь имитируется работа следующих сочетаний клавиш:
+        //CTRL + A
+        //SHIFT
+        //CTRL + D
+        //Delete
         public void Frame_KeyDown(object? sender, KeyEventArgs e)
         {
             shift = e.Shift;
             ctrl = e.Control;
+            
             if (ctrl && e.KeyCode == Keys.A)
             {
                 if (frames.Count == selection.Count)
@@ -72,6 +83,7 @@ namespace GifCreator.FrameServices
             if (e.KeyCode == Keys.Delete)
                 Delete = true;
         }
+        
         public void Frame_KeyUp(object? sender, KeyEventArgs e)
         {
             shift = e.Shift;
@@ -79,6 +91,7 @@ namespace GifCreator.FrameServices
             if (e.KeyCode == Keys.Delete)
                 Delete = false;
         }
+        //Обработчик нажатия на кадры и их выделения
         private void Frame_MouseClick(object? sender, MouseEventArgs e)
         {
             int currentIndex = frames.IndexOf((PictureBox)sender);
@@ -107,12 +120,14 @@ namespace GifCreator.FrameServices
             if (selection.Count > 1) ManySelected = true;
             else ManySelected = false;
         }
+        //Выбор кадров группы кадров по индексу
         private void SelectFrom(int index1, int index2)
         {
             DeselectAll();
             for (int i = index1; i <= index2; i++)
                 Add(frames[i]);
         }
+        //Выбор всех кадров
         public void SelectAll()
         {
             foreach (var frame in frames)
@@ -120,6 +135,7 @@ namespace GifCreator.FrameServices
             Selected = true;
             ManySelected = true;
         }
+        //Снятие выделения со всех кадров
         public void DeselectAll()
         {
             foreach (var frame in frames)
@@ -127,7 +143,7 @@ namespace GifCreator.FrameServices
             Selected = false;
             ManySelected = false;
         }
-
+        //Добавление кадра для его обработки
         private void Add(PictureBox frame)
         {
             if (selection.Contains(frame)) return;
@@ -136,6 +152,7 @@ namespace GifCreator.FrameServices
             frame.Invalidate();
             indexOfSelectedFrame = frames.IndexOf(frame);
         }
+        //Удаление кадра из списка доступных для выделения
         private void Remove(PictureBox frame)
         {
             if (!selection.Contains(frame)) return;
@@ -149,6 +166,7 @@ namespace GifCreator.FrameServices
             }
             indexOfSelectedFrame = frames.IndexOf(selection[^1]);
         }
+        //Обновление всех кадров
         public void UpdateFrames(List<PictureBox> frames)
         {
             this.frames = frames;
@@ -156,6 +174,7 @@ namespace GifCreator.FrameServices
         }
         public int GetIndexOfFirstFrame() => frames.IndexOf(selection[0]);
         public int GetIndexOfLastFrame() => frames.IndexOf(selection.Last());
+        //Получения выбранных кадров
         public int[] GetIndexes()
         {
             var indexes = new int[selection.Count];

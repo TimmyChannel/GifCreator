@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace GifCreator.Tools
 {
+    /// <summary>
+    /// Класс вызывающий меню для изменения одного кадра
+    /// </summary>
     public class SelectionMenu
     {
         #region Controls
@@ -44,6 +47,7 @@ namespace GifCreator.Tools
         public SelectionMenu()
         {
             margin = 10;
+            //GroupBox для всех объектов
             #region Menu
             Menu = new GroupBox
             {
@@ -58,6 +62,7 @@ namespace GifCreator.Tools
                 Visible = false
             };
             #endregion
+            //Кнопка для удаления кадра
             #region DeleteFrame
             DeleteFrame = new Button();
             Menu.Controls.Add(DeleteFrame);
@@ -80,6 +85,7 @@ namespace GifCreator.Tools
             DeleteFrame.UseVisualStyleBackColor = false;
             DeleteFrame.Click += DeleteFrame_Click;
             #endregion       
+            //Кнопка для изменения изображения кадра
             #region ChangeImage
             ChangeImage = new Button();
             Menu.Controls.Add(ChangeImage);
@@ -102,6 +108,7 @@ namespace GifCreator.Tools
             ChangeImage.UseVisualStyleBackColor = false;
             ChangeImage.Click += ChangeImage_Click;
             #endregion           
+            //Кнопка для удаления изображения кадра
             #region DeleteImage
             DeleteImage = new Button();
             Menu.Controls.Add(DeleteImage);
@@ -124,6 +131,7 @@ namespace GifCreator.Tools
             DeleteImage.UseVisualStyleBackColor = false;
             DeleteImage.Click += DeleteImage_Click;
             #endregion
+            //TextBox для изменения времени задержки одного кадра
             #region TimeDelayBox
             TimeDelayBox = new TextBox();
             Menu.Controls.Add(TimeDelayBox);
@@ -137,6 +145,7 @@ namespace GifCreator.Tools
             TimeDelayBox.Size = new Size(30, 20);
             TimeDelayBox.Location = new Point(130, DeleteImage.Location.Y + margin + DeleteImage.Size.Height);
             #endregion
+            //TextBox для вставки выбранного кадра после указанного
             #region PasteAfterBox
             PasteAfterBox = new TextBox();
             Menu.Controls.Add(PasteAfterBox);
@@ -150,6 +159,7 @@ namespace GifCreator.Tools
             PasteAfterBox.Size = new Size(30, 100);
             PasteAfterBox.Location = new Point(110, TimeDelayBox.Location.Y + margin + TimeDelayBox.Size.Height);
             #endregion
+            //Подписи к элементам управления
             #region frame
             frame = new Label();
             Menu.Controls.Add(frame);
@@ -204,6 +214,7 @@ namespace GifCreator.Tools
             #endregion
             Menu.MaximumSize = new Size(400, 600);
         }
+        //Обновление полей
         public void UpdateFields()
         {
             deleteFrm = false;
@@ -219,6 +230,7 @@ namespace GifCreator.Tools
        
         private void DeleteImage_Click(object? sender, EventArgs e) => deleteImg = true;
         private void DeleteFrame_Click(object? sender, EventArgs e) => deleteFrm = true;
+        //Обработка события нажатий на клавиатуру при вводе в TextBox
         private void PasteAfterBox_KeyPress(object? sender, KeyPressEventArgs e)
         {
             try
@@ -226,6 +238,7 @@ namespace GifCreator.Tools
                 char number = e.KeyChar;
                 if (Char.IsDigit(number) || e.KeyChar == Convert.ToChar(8) || e.KeyChar == Convert.ToChar(13))
                 {
+                    //Если нажат enter
                     if (e.KeyChar == Convert.ToChar(13))
                     {
                         indexEnter = true;
@@ -240,6 +253,7 @@ namespace GifCreator.Tools
                 Debug.WriteLine(ex.Message);
             }
         }
+        //Обработка события нажатий на клавиатуру при вводе в TextBox
         private void TimeDelayBox_KeyPress(object? sender, KeyPressEventArgs e)
         {
             try
@@ -247,6 +261,7 @@ namespace GifCreator.Tools
                 char number = e.KeyChar;
                 if (Char.IsDigit(number) || e.KeyChar == Convert.ToChar(8) || e.KeyChar == Convert.ToChar(13))
                 {
+                    //Если нажат enter
                     if (e.KeyChar == Convert.ToChar(13))
                     {
                         timeDelay = Convert.ToInt32(TimeDelayBox.Text);

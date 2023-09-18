@@ -12,12 +12,17 @@ using System.Windows.Forms;
 
 namespace GifCreator.Forms
 {
+    /// <summary>
+    /// Форма предпросмотра GIF
+    /// </summary>
     public partial class GifPreview : Form
     {
         readonly private List<PictureBox> frames;
         public bool IsOpened { get; set; }
+        //Размеры GIF
         public int Height { get; set; }
         public int Width { get; set; }
+        //Количество циклов
         public int RepeatCount { get; set; }
         public GifPreview(List<PictureBox> frames)
         {
@@ -28,6 +33,7 @@ namespace GifCreator.Forms
             Width = 128;
             RepeatCount = 0;
         }
+        //Функция изменения размера изображения до нужного
         private Bitmap ResizeImage(Bitmap imgToResize, Size size)
         {
             try
@@ -35,7 +41,9 @@ namespace GifCreator.Forms
                 Bitmap b = new Bitmap(size.Width, size.Height);
                 using (Graphics g = Graphics.FromImage((Image)b))
                 {
+                    //Устанавливаем режим интерполяции
                     g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                    //Отрисовываем новое изображение
                     g.DrawImage(imgToResize, 0, 0, size.Width, size.Height);
                 }
                 return b;
@@ -63,12 +71,13 @@ namespace GifCreator.Forms
                 }
                 if (allImagesAreNullable) throw new Exception("Нет изображений");
                 var stream = new MemoryStream();
-
+                //В цикле добавляем в кодировщик те кадры, где есть изображение
                 using (var gif = new GifEncoder(stream, Width, Height, RepeatCount))
                 {
                     foreach (var frm in frames)
                         if (frm.Image != null)
                         {
+                            //Если размер текущего изображения совпадает с требуемым, то загружаем, иначе меняем её размер
                             if (Width == frm.Image.Width && Height == frm.Image.Height)
                             {
                                 gif.AddFrame(frm.Image, 0, 0, (TimeSpan)frm.Tag);
@@ -95,6 +104,7 @@ namespace GifCreator.Forms
                 IsOpened = false;
             }
         }
+        //Событие для работы предпросмотра Gif
         private void OnFrameChanged(object sender, EventArgs e)
         {
             if (InvokeRequired)
@@ -105,9 +115,10 @@ namespace GifCreator.Forms
             ImageAnimator.UpdateFrames();
             Invalidate(false);
         }
-
+        //Обработчик события при нажатии на кнопку сохранения
         private void AddImage_Click(object sender, EventArgs e)
         {
+            //Останавливаем проигрывание анимации и освобождаем ресурсы
             ImageAnimator.StopAnimate(GifBox.Image, OnFrameChanged);
             var dlg = new SaveFileDialog
             {
@@ -115,12 +126,15 @@ namespace GifCreator.Forms
             };
             if (dlg.ShowDialog() == DialogResult.OK)
             {
+                //Запускаем поток записи в файл
                 var stream = new FileStream(dlg.FileName, FileMode.Create);
+                //В цикле добавляем в кодировщик те кадры, где есть изображение
                 using (var gif = new GifEncoder(stream, Width, Height, RepeatCount))
                 {
                     foreach (var frm in frames)
                         if (frm.Image != null)
-                        {
+                        {                            
+                            //Если размер текущего изображения совпадает с требуемым, то загружаем, иначе меняем её размер
                             if (Width == frm.Image.Width && Height == frm.Image.Height)
                             {
                                 gif.AddFrame(frm.Image, 0, 0, (TimeSpan)frm.Tag);

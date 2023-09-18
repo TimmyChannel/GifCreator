@@ -41,6 +41,7 @@ namespace GifCreator.Tools
         public MultiSelectionMenu()
         {
             margin = 10;
+            //GroupBox для всех объектов
             #region Menu
             Menu = new GroupBox
             {
@@ -55,6 +56,7 @@ namespace GifCreator.Tools
                 Visible = false
             };
             #endregion
+            //Кнопка для удаления кадров
             #region DeleteFrames
             DeleteFrames = new Button();
             Menu.Controls.Add(DeleteFrames);
@@ -76,7 +78,8 @@ namespace GifCreator.Tools
             DeleteFrames.Text = "Удалить кадры";
             DeleteFrames.UseVisualStyleBackColor = false;
             DeleteFrames.Click += DeleteFrame_Click;
-            #endregion       
+            #endregion
+            //Кнопка для удаления изображений кадров
             #region DeleteImages
             DeleteImages = new Button();
             Menu.Controls.Add(DeleteImages);
@@ -99,6 +102,7 @@ namespace GifCreator.Tools
             DeleteImages.UseVisualStyleBackColor = false;
             DeleteImages.Click += DeleteImage_Click;
             #endregion
+            //TextBox для изменения времени задержки одного кадра
             #region TimeDelayBox
             TimeDelayBox = new TextBox();
             Menu.Controls.Add(TimeDelayBox);
@@ -111,7 +115,8 @@ namespace GifCreator.Tools
             TimeDelayBox.KeyPress += TimeDelayBox_KeyPress;
             TimeDelayBox.Size = new Size(30, 20);
             TimeDelayBox.Location = new Point(130, DeleteImages.Location.Y + margin + DeleteImages.Size.Height);
-            #endregion 
+            #endregion
+            //TextBox для вставки выбранных кадров после указанного
             #region PasteAfterBox
             PasteAfterBox = new TextBox();
             Menu.Controls.Add(PasteAfterBox);
@@ -125,6 +130,7 @@ namespace GifCreator.Tools
             PasteAfterBox.Size = new Size(30, 100);
             PasteAfterBox.Location = new Point(110, TimeDelayBox.Location.Y + margin + TimeDelayBox.Size.Height);
             #endregion
+            //Подписи к элементам управления
             #region frame
             frame = new Label();
             Menu.Controls.Add(frame);
@@ -179,6 +185,7 @@ namespace GifCreator.Tools
             #endregion
             Menu.MaximumSize = new Size(400, 400);
         }
+        //Обновление полей
         public void UpdateFields()
         {
             deleteFrms = false;
@@ -192,7 +199,7 @@ namespace GifCreator.Tools
 
         private void DeleteImage_Click(object? sender, EventArgs e) => deleteImgs = true;
         private void DeleteFrame_Click(object? sender, EventArgs e) => deleteFrms = true;
-
+        //Обработка события нажатий на клавиатуру при вводе в TextBox
         private void PasteAfterBox_KeyPress(object? sender, KeyPressEventArgs e)
         {
             try
@@ -200,6 +207,7 @@ namespace GifCreator.Tools
                 char number = e.KeyChar;
                 if (Char.IsDigit(number) || e.KeyChar == Convert.ToChar(8) || e.KeyChar == Convert.ToChar(13))
                 {
+                    //Если нажат enter
                     if (e.KeyChar == Convert.ToChar(13))
                     {
                         indexEnter = true;
@@ -214,6 +222,7 @@ namespace GifCreator.Tools
                 Debug.WriteLine(ex.Message);
             }
         }
+        //Обработка события нажатий на клавиатуру при вводе в TextBox
         private void TimeDelayBox_KeyPress(object? sender, KeyPressEventArgs e)
         {
             try
@@ -221,6 +230,7 @@ namespace GifCreator.Tools
                 char number = e.KeyChar;
                 if (Char.IsDigit(number) || e.KeyChar == Convert.ToChar(8) || e.KeyChar == Convert.ToChar(13))
                 {
+                    //Если нажат enter
                     if (e.KeyChar == Convert.ToChar(13))
                     {
                         timeDelays = Convert.ToInt32(TimeDelayBox.Text);

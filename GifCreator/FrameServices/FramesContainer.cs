@@ -8,8 +8,10 @@ using System.Windows.Forms;
 using GifCreator.Tools;
 namespace GifCreator.FrameServices
 {
+    //Мультизадачный контейнер для кадров, который также отрисовывает их и регулирует их обработку
     public class FramesContainer
     {
+        //Имитация таблицы кадров
         #region Grid
         int rowSize;
         int columnNum;
@@ -48,6 +50,7 @@ namespace GifCreator.FrameServices
             this.frameSize = frameSize;
             path = GetPath();
         }
+        //Добавление пустого кадра
         public void AddPicture()
         {
             var frame = new PictureBox();
@@ -87,6 +90,7 @@ namespace GifCreator.FrameServices
             Panel.Controls.Add(label);
             Panel.Controls.Add(frame);
         }
+        //Добавление кадра с изображением
         public void AddPicture(Image image)
         {
             var frame = new PictureBox();
@@ -125,6 +129,7 @@ namespace GifCreator.FrameServices
             Panel.Controls.Add(frame);
         }
         #region Location and Stacking
+        //Пересчёт положения кадров (при изменении размера панели, добавления новых кадров или удаления старых)
         public void ReStackFrames()
         {
             int i = 0;
@@ -145,6 +150,7 @@ namespace GifCreator.FrameServices
             Panel.HorizontalScroll.Visible = false;
             Panel.AutoScroll = true;
         }
+        //Просчёт точки для нового кадра 
         private Point CalculateLocation(int count)
         {
             var gap = margin;
@@ -165,12 +171,14 @@ namespace GifCreator.FrameServices
             return result;
         }
         #endregion
+        //Обработчик наведения курсора на кадр
         private void pictureBox_MouseEntered(object sender, EventArgs e)
         {
             var temp = (PictureBox)sender;
             entered = true;
             temp.BackColor = Color.FromArgb(100, 100, 100);
         }
+        //Обработчик вывода курсора из кадра
         private void pictureBox_MouseLeave(object sender, EventArgs e)
         {
             var temp = (PictureBox)sender;
@@ -178,6 +186,7 @@ namespace GifCreator.FrameServices
             entered = false;
         }
         #region Moving
+        //Обработчик события перетаскивания кадра
         private void Picture_MouseMove(object sender, MouseEventArgs e)
         {
             if (moving && entered)
@@ -190,6 +199,7 @@ namespace GifCreator.FrameServices
                 frame.Invalidate();
             }
         }
+        //Перемещние кадра в зависимости от положения курсора при его перетаскивании
         private void Moved(Point currentLocation)
         {
             if (currentLocation.X > (startPosOfPB.X + frameSize.Width))
@@ -247,12 +257,14 @@ namespace GifCreator.FrameServices
             }
 
         }
+        //Смена кадров местами
         private void SwapFrame(int index1, int index2)
         {
             var frame = frames[index1];
             frames.RemoveAt(index1);
             frames.Insert(index2, frame);
         }
+
         private void Picture_MouseUp(object sender, MouseEventArgs e)
         {
             var frame = (PictureBox)sender;
@@ -282,6 +294,7 @@ namespace GifCreator.FrameServices
         public void Pic_KeyUp(object? sender, KeyEventArgs e) => select = e.Control | e.Shift;
         #endregion
         #region Drawing
+        //Отрисовка перемещаемого кадра
         private void DrawMoved(object sender, PaintEventArgs e)
         {
             var frame = (PictureBox)sender;
@@ -310,9 +323,9 @@ namespace GifCreator.FrameServices
             gp.AddArc(r.X, r.Y + r.Height - diameter, diameter, diameter, 90, 90);
             return gp;
         }
+        //Добавление текста под кадром
         private static void AddText(PictureBox frame)
         {
-
             frame.Paint += new PaintEventHandler((sender, e) =>
             {
                 PointF locationToDraw = new();
@@ -327,11 +340,13 @@ namespace GifCreator.FrameServices
                 e.Graphics.DrawString(text, new Font("Times New Roman", 10), new SolidBrush(Color.FromArgb(229, 229, 229)), locationToDraw);
             });
         }
+        //Перерисовка кадров
         public void ReDrawFrames()
         {
             foreach (var frame in frames)
                 frame.Invalidate();
         }
+        //Удаление кадра
         public void Remove(PictureBox frame)
         {
             Panel.Controls.Remove(frame);
@@ -341,6 +356,7 @@ namespace GifCreator.FrameServices
             nums.Remove(nums.Last());
             ReStackFrames();
         }
+        //Перемещение кадра 
         public void MoveFromTo(int from, int to)
         {
             var frame = frames[from];
@@ -348,14 +364,7 @@ namespace GifCreator.FrameServices
             frames.RemoveAt(from);
             frames.Insert(to, frame);
         }
-        public void RemoveAt(int index)
-        {
-            Panel.Controls.Remove(frames[index]);
-            Panel.Controls.Remove(nums.Last());
-            frames.RemoveAt(index);
-            nums.Remove(nums.Last());
-            ReStackFrames();
-        }
+        //Удаление всех кадров
         public void RemoveAll()
         {
             Panel.Controls.Clear();

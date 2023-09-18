@@ -48,14 +48,13 @@ namespace GifCreator.Forms
             HeightBox.Text = "128";
             WidthBox.Text = "128";
         }
-
+        //Обработчик нажатия на кнопку создания GIF
         private void GifButton_Click(object sender, EventArgs e)
         {
             try
             {
                 GifHeight = Convert.ToInt32(HeightBox.Text);
                 GifWidth = Convert.ToInt32(WidthBox.Text);
-
                 int repeats = 0;
                 repeats = RepeatSlider.Value switch
                 {
@@ -66,10 +65,12 @@ namespace GifCreator.Forms
                 };
                 if (GifHeight == 0) throw new Exception("Высота !=0");
                 if (GifWidth == 0) throw new Exception("Ширина !=0");
-                var f = new GifPreview(boxes.Container);
-                f.Width = GifWidth;
-                f.Height = GifHeight;
-                f.RepeatCount = repeats;
+                var f = new GifPreview(boxes.Container)
+                {
+                    Width = GifWidth,
+                    Height = GifHeight,
+                    RepeatCount = repeats
+                };
                 f.Gif();
             }
             catch (Exception ex)
@@ -77,10 +78,12 @@ namespace GifCreator.Forms
                 Debug.WriteLine(ex.Message);
             }
         }
+        //Метод для проверки дейтсвий совершёнными пользователями
         private void Checker(object? sender, EventArgs e)
         {
             try
             {
+                //Если выбран кадр
                 if (selector.Selected)
                 {
                     timer1.Interval = 20;
@@ -136,6 +139,7 @@ namespace GifCreator.Forms
                     timer1.Interval = 100;
                     SelectionMenu.Menu.Visible = false;
                 }
+                //Если выбрано несколько кадров
                 if (selector.ManySelected)
                 {
                     timer1.Interval = 20;
@@ -224,6 +228,7 @@ namespace GifCreator.Forms
             boxes.PanelSize = imagePanel.DisplayRectangle.Size;
             boxes.ReStackFrames();
         }
+        //Обработка события на нажатие кнопки на добавление изображений
         private void AddImage_Click(object sender, EventArgs e)
         {
             try
@@ -250,6 +255,7 @@ namespace GifCreator.Forms
         {
         }
 
+        //Обработчик события доабавления пустого кадра
         private void AddEmptyFrame_Click(object sender, EventArgs e)
         {
             try
@@ -272,6 +278,7 @@ namespace GifCreator.Forms
 
         }
 
+        //Обработчик события ввода в TextBox
         private void HeightBox_KeyPress(object sender, KeyPressEventArgs e)
         {
             try
@@ -285,7 +292,7 @@ namespace GifCreator.Forms
                 Debug.WriteLine(ex.Message);
             }
         }
-
+        //Обработчик события ввода в TextBox
         private void WidthBox_KeyPress(object sender, KeyPressEventArgs e)
         {
             try

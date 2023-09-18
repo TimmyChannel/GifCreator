@@ -9,6 +9,7 @@ namespace GifCreator.Encoding
 {
     public class GifEncoder : IDisposable
     {
+        //Установка хэдера и констант для GIF файла
         #region Header Constants
         private const string FileType = "GIF";
         private const string FileVersion = "89a";
@@ -35,7 +36,7 @@ namespace GifCreator.Encoding
         readonly private int? height;
         readonly private int? repeatCount;
         private readonly Stream stream;
-
+        //Время задержки одного кадра 
         public TimeSpan FrameDelay { get; set; }
         public GifEncoder(Stream stream, int? width = null, int? height = null, int? repeatCount = null)
         {
@@ -45,26 +46,27 @@ namespace GifCreator.Encoding
             this.repeatCount = repeatCount;
         }
 
+        //Добавление кадра
         public void AddFrame(Image img, int x = 0, int y = 0, TimeSpan? frameDelay = null)
         {
-            using (var gifStream = new MemoryStream())
-            {
-                img.Save(gifStream, ImageFormat.Gif);
-                if (isFirstImage)
-                    InitHeader(gifStream, img.Width, img.Height);
+            using var gifStream = new MemoryStream();
+            img.Save(gifStream, ImageFormat.Gif);
+            if (isFirstImage)
+                InitHeader(gifStream, img.Width, img.Height);
 
-                WriteGraphicControlBlock(gifStream, frameDelay.GetValueOrDefault(FrameDelay));
-                WriteImageBlock(gifStream, !isFirstImage, x, y, img.Width, img.Height);
-            }
+            WriteGraphicControlBlock(gifStream, frameDelay.GetValueOrDefault(FrameDelay));
+            WriteImageBlock(gifStream, !isFirstImage, x, y, img.Width, img.Height);
         }
-
+        //Если кадра является первым, то мы должны внести в файл базовые метаданные GIF файла
         private void InitHeader(Stream sourceGif, int w, int h)
         {
             WriteString(FileType);
             WriteString(FileVersion);
             WriteShort(width.GetValueOrDefault(w));
             WriteShort(height.GetValueOrDefault(h));
+            // Устанавливаем позицию в исходном файле GIF для чтения информации о глобальной цветовой палитре
             sourceGif.Position = SourceGlobalColorInfoPosition;
+            // Записываем байт информации о глобальной цветовой палитре в файл
             WriteByte(sourceGif.ReadByte());
             WriteByte(0);
             WriteByte(0);
@@ -79,7 +81,7 @@ namespace GifCreator.Encoding
             WriteByte(0);
             isFirstImage = false;
         }
-
+        //Данный код читает таблицу цветов из исходного файла GIF и записывает ее в выходной поток в текущей позиции
         private void WriteColorTable(Stream sourceGif)
         {
             sourceGif.Position = SourceColorBlockPosition;
@@ -87,21 +89,23 @@ namespace GifCreator.Encoding
             sourceGif.Read(colorTable, 0, colorTable.Length);
             stream.Write(colorTable, 0, colorTable.Length);
         }
-
+        //данный код читает блок графического управления из исходного файла GIF и записывает его в
+        //выходной поток в соответствии с определенной структурой и форматом блока графического управления GIF
         private void WriteGraphicControlBlock(Stream sourceGif, TimeSpan frameDelay)
         {
             sourceGif.Position = SourceGraphicControlExtensionPosition;
             var blockhead = new byte[SourceGraphicControlExtensionLength];
             sourceGif.Read(blockhead, 0, blockhead.Length);
-
             WriteShort(GraphicControlExtensionBlockIdentifier);
             WriteByte(GraphicControlExtensionBlockSize);
             WriteByte(blockhead[3] & 0xf7 | 0x08);
+            //Запись задержки кадра в милисекундах
             WriteShort(Convert.ToInt32(frameDelay.TotalMilliseconds / 10));
             WriteByte(blockhead[6]);
             WriteByte(0);
         }
-
+        //Данный код читает заголовок и данные блока изображения из исходного файла GIF и записывает их в
+        //выходной поток в соответствии с определенной структурой и форматом блока изображения GIF.
         private void WriteImageBlock(Stream sourceGif, bool includeColorTable, int x, int y, int h, int w)
         {
             sourceGif.Position = SourceImageBlockPosition;
@@ -123,7 +127,6 @@ namespace GifCreator.Encoding
 
             WriteByte(header[10]);
 
-
             sourceGif.Position = SourceImageBlockPosition + SourceImageBlockHeaderLength;
 
             var dataLength = sourceGif.ReadByte();
@@ -140,22 +143,24 @@ namespace GifCreator.Encoding
             stream.WriteByte(0);
 
         }
-
+        //Записывает в поток байт
         private void WriteByte(int value)
         {
             stream.WriteByte(Convert.ToByte(value));
         }
+        //Записывает в поток 2 байта
         private void WriteShort(int value)
         {
             stream.WriteByte(Convert.ToByte(value & 0xff));
             stream.WriteByte(Convert.ToByte((value >> 8) & 0xff));
         }
-
+        //Записывает строку в поток
         private void WriteString(string value)
         {
             stream.Write(value.ToArray().Select(c => (byte)c).ToArray(), 0, value.Length);
         }
-
+        //Метод записывает завершающий байт в поток и выполняет сброс буфера,
+        //чтобы убедиться, что все данные были записаны в выходной поток
         public void Dispose()
         {
             WriteByte(FileTrailer);
