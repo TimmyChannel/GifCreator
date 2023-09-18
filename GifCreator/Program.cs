@@ -1,3 +1,5 @@
+using GifCreator.Forms;
+
 namespace GifCreator
 {
     internal static class Program
