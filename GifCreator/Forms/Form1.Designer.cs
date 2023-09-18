@@ -52,7 +52,6 @@ namespace GifCreator.Forms
             this.Height = new System.Windows.Forms.Label();
             this.WidthBox = new System.Windows.Forms.TextBox();
             this.HeightBox = new System.Windows.Forms.TextBox();
-            this.GifSpace = new System.Windows.Forms.SplitContainer();
             this.imagePanel = new GifCreator.Tools.StaticPanel();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.WorkSpace)).BeginInit();
@@ -62,9 +61,6 @@ namespace GifCreator.Forms
             this.Tools.SuspendLayout();
             this.GifProperties.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.RepeatSlider)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.GifSpace)).BeginInit();
-            this.GifSpace.Panel1.SuspendLayout();
-            this.GifSpace.SuspendLayout();
             this.SuspendLayout();
             // 
             // WorkSpace
@@ -87,7 +83,7 @@ namespace GifCreator.Forms
             // 
             // WorkSpace.Panel2
             // 
-            this.WorkSpace.Panel2.Controls.Add(this.GifSpace);
+            this.WorkSpace.Panel2.Controls.Add(this.imagePanel);
             this.WorkSpace.Panel2.Cursor = System.Windows.Forms.Cursors.Default;
             this.WorkSpace.Panel2MinSize = 250;
             this.WorkSpace.Size = new System.Drawing.Size(1198, 775);
@@ -360,34 +356,15 @@ namespace GifCreator.Forms
             this.HeightBox.TabIndex = 3;
             this.HeightBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.HeightBox_KeyPress);
             // 
-            // GifSpace
-            // 
-            this.GifSpace.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(46)))), ((int)(((byte)(46)))));
-            this.GifSpace.Cursor = System.Windows.Forms.Cursors.HSplit;
-            this.GifSpace.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.GifSpace.Location = new System.Drawing.Point(0, 0);
-            this.GifSpace.MinimumSize = new System.Drawing.Size(0, 25);
-            this.GifSpace.Name = "GifSpace";
-            this.GifSpace.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // GifSpace.Panel1
-            // 
-            this.GifSpace.Panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(26)))), ((int)(((byte)(26)))));
-            this.GifSpace.Panel1.Controls.Add(this.imagePanel);
-            this.GifSpace.Panel1.Cursor = System.Windows.Forms.Cursors.Default;
-            this.GifSpace.Panel1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(229)))), ((int)(((byte)(229)))));
-            this.GifSpace.Size = new System.Drawing.Size(947, 775);
-            this.GifSpace.SplitterDistance = 387;
-            this.GifSpace.TabIndex = 0;
-            // 
             // imagePanel
             // 
             this.imagePanel.AutoScroll = true;
             this.imagePanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.imagePanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(26)))), ((int)(((byte)(26)))));
             this.imagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.imagePanel.Location = new System.Drawing.Point(0, 0);
             this.imagePanel.Name = "imagePanel";
-            this.imagePanel.Size = new System.Drawing.Size(947, 387);
+            this.imagePanel.Size = new System.Drawing.Size(947, 775);
             this.imagePanel.TabIndex = 0;
             this.imagePanel.SizeChanged += new System.EventHandler(this.ImagePanel_SizeChaged);
             // 
@@ -400,7 +377,7 @@ namespace GifCreator.Forms
             this.Controls.Add(this.WorkSpace);
             this.KeyPreview = true;
             this.Name = "Form1";
-            this.Text = "DuckGifer";
+            this.Text = "GifCreator";
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseMove);
             this.WorkSpace.Panel1.ResumeLayout(false);
             this.WorkSpace.Panel2.ResumeLayout(false);
@@ -410,16 +387,12 @@ namespace GifCreator.Forms
             this.GifProperties.ResumeLayout(false);
             this.GifProperties.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.RepeatSlider)).EndInit();
-            this.GifSpace.Panel1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.GifSpace)).EndInit();
-            this.GifSpace.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
 
         #endregion
         private SplitContainer WorkSpace;
-        private SplitContainer GifSpace;
         private Button AddImage;
         private StaticPanel imagePanel;
         private System.Windows.Forms.Timer timer1;

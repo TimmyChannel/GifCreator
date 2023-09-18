@@ -57,15 +57,13 @@ namespace GifCreator.Forms
                 GifWidth = Convert.ToInt32(WidthBox.Text);
 
                 int repeats = 0;
-                switch (RepeatSlider.Value)
+                repeats = RepeatSlider.Value switch
                 {
-                    case 5: repeats = 10; break;
-                    case 6: repeats = 25; break;
-                    case 7: repeats = 0; break;
-                    default:
-                        repeats = RepeatSlider.Value + 1;
-                        break;
-                }
+                    5 => 10,
+                    6 => 25,
+                    7 => 0,
+                    _ => RepeatSlider.Value + 1,
+                };
                 if (GifHeight == 0) throw new Exception("Высота !=0");
                 if (GifWidth == 0) throw new Exception("Ширина !=0");
                 var f = new GifPreview(boxes.Container);

@@ -15,7 +15,6 @@ namespace GifCreator.Forms
     public partial class GifPreview : Form
     {
         readonly private List<PictureBox> frames;
-        readonly private RichTextBox infoBox;
         public bool IsOpened { get; set; }
         public int Height { get; set; }
         public int Width { get; set; }
@@ -109,6 +108,7 @@ namespace GifCreator.Forms
 
         private void AddImage_Click(object sender, EventArgs e)
         {
+            ImageAnimator.StopAnimate(GifBox.Image, OnFrameChanged);
             var dlg = new SaveFileDialog
             {
                 Filter = "GIF (*.gif)|*.gif"
