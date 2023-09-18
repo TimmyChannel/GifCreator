@@ -180,8 +180,6 @@ namespace GifCreator.Forms
             // 
             // GifProperties
             // 
-            this.GifProperties.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.GifProperties.Controls.Add(this.label8);
             this.GifProperties.Controls.Add(this.label7);
             this.GifProperties.Controls.Add(this.label6);
@@ -370,8 +368,8 @@ namespace GifCreator.Forms
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(46)))), ((int)(((byte)(46)))));
             this.ClientSize = new System.Drawing.Size(1198, 775);
             this.Controls.Add(this.WorkSpace);
