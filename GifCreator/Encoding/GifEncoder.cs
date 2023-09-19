@@ -50,57 +50,78 @@ namespace GifCreator.Encoding
         public void AddFrame(Image img, int x = 0, int y = 0, TimeSpan? frameDelay = null)
         {
             using var gifStream = new MemoryStream();
+            //Именно тут мы получаем цветовую палитру, это делает метод Save
             img.Save(gifStream, ImageFormat.Gif);
+            //Если кадр первый, то мы инициируем заголовок
             if (isFirstImage)
                 InitHeader(gifStream, img.Width, img.Height);
-
+            //Записываем блок управления графикой
             WriteGraphicControlBlock(gifStream, frameDelay.GetValueOrDefault(FrameDelay));
             WriteImageBlock(gifStream, !isFirstImage, x, y, img.Width, img.Height);
         }
-        //Если кадра является первым, то мы должны внести в файл базовые метаданные GIF файла
+        //Если кадр является первым, то мы должны внести в файл базовые метаданные GIF файла
         private void InitHeader(Stream sourceGif, int w, int h)
         {
+            //Вносим информацию о типе и версии файла
             WriteString(FileType);
             WriteString(FileVersion);
+            //Устанавливаем данные о ширине и высоте отображаемого экрана в пикселях
             WriteShort(width.GetValueOrDefault(w));
             WriteShort(height.GetValueOrDefault(h));
             // Устанавливаем позицию в исходном файле GIF для чтения информации о глобальной цветовой палитре
             sourceGif.Position = SourceGlobalColorInfoPosition;
-            // Записываем байт информации о глобальной цветовой палитре в файл
+            // Записываем служебный 5й байт
             WriteByte(sourceGif.ReadByte());
+            //Зарезервированные байты
             WriteByte(0);
             WriteByte(0);
+            //Записываем таблицу цветов
             WriteColorTable(sourceGif);
-
+            //Запись блока расширения в таблицу
             WriteShort(ApplicationExtensionBlockIdentifier);
             WriteByte(ApplicationBlockSize);
+            //Запись идентификатора приложения, которому принадлежит это расширение
             WriteString(ApplicationIdentification);
+            //Размер блока в байтах
             WriteByte(3);
+            //Фиксированное значение
             WriteByte(1);
+            //Записываем количество повторений
             WriteShort(repeatCount.GetValueOrDefault(0));
+            //Конец расширения
             WriteByte(0);
             isFirstImage = false;
         }
         //Данный код читает таблицу цветов из исходного файла GIF и записывает ее в выходной поток в текущей позиции
         private void WriteColorTable(Stream sourceGif)
         {
+            //Устанавливаем позицию записи таблицы цветов
             sourceGif.Position = SourceColorBlockPosition;
+            //Устанавливаем размер таблицы цветов
             var colorTable = new byte[SourceColorBlockLength];
+            //Считываем из исходного файла в массив
             sourceGif.Read(colorTable, 0, colorTable.Length);
+            //Записываем в файл таблицу цветов
             stream.Write(colorTable, 0, colorTable.Length);
         }
-        //данный код читает блок графического управления из исходного файла GIF и записывает его в
+        //Данный код читает блок графического управления из исходного файла GIF и записывает его в
         //выходной поток в соответствии с определенной структурой и форматом блока графического управления GIF
         private void WriteGraphicControlBlock(Stream sourceGif, TimeSpan frameDelay)
         {
+            //Устанавливаем позицию записи блока графического управления
             sourceGif.Position = SourceGraphicControlExtensionPosition;
+            //Считываем заголовок блока графического управления
             var blockhead = new byte[SourceGraphicControlExtensionLength];
             sourceGif.Read(blockhead, 0, blockhead.Length);
+            //Записываем данные о коде расширения
             WriteShort(GraphicControlExtensionBlockIdentifier);
+            //Записываем размер блока
             WriteByte(GraphicControlExtensionBlockSize);
+            //Записываем служебный байт
             WriteByte(blockhead[3] & 0xf7 | 0x08);
             //Запись задержки кадра в милисекундах
             WriteShort(Convert.ToInt32(frameDelay.TotalMilliseconds / 10));
+            //Записываем индекс цвета прозрачности
             WriteByte(blockhead[6]);
             WriteByte(0);
         }
@@ -108,38 +129,51 @@ namespace GifCreator.Encoding
         //выходной поток в соответствии с определенной структурой и форматом блока изображения GIF.
         private void WriteImageBlock(Stream sourceGif, bool includeColorTable, int x, int y, int h, int w)
         {
+            //Устанавливаем позицию записи блока изображения
             sourceGif.Position = SourceImageBlockPosition;
+            //Считываем заголовок блока изображения
             var header = new byte[SourceImageBlockHeaderLength];
             sourceGif.Read(header, 0, header.Length);
+            //Записываем хэдер блока (в данном случае его обозначение 0x2C)
             WriteByte(header[0]);
+            //Координаты относительно экрана
             WriteShort(x);
             WriteShort(y);
+            //Высоту и ширину изображения
             WriteShort(h);
             WriteShort(w);
+            //Если это не первое изображение, то включаем сюда цветовую палитру изображения
             if (includeColorTable)
             {
+                //Устанавливаем позицию цветовой палитры для чтения её из исходного изображения
                 sourceGif.Position = SourceGlobalColorInfoPosition;
+                //Записываем служебный байт
                 WriteByte(sourceGif.ReadByte() & 0x3f | 0x80);
+                //Записываем цветовую таблицу
                 WriteColorTable(sourceGif);
             }
             else
+                //Записываем служебный байт
                 WriteByte(header[9] & 0x07 | 0x07);
 
             WriteByte(header[10]);
 
             sourceGif.Position = SourceImageBlockPosition + SourceImageBlockHeaderLength;
 
+            //Записываем данные сжатые алгоритмом LZW из исходного изображения
             var dataLength = sourceGif.ReadByte();
             while (dataLength > 0)
             {
                 var imgData = new byte[dataLength];
                 sourceGif.Read(imgData, 0, dataLength);
-
+                //Записываем размер следующего блока
                 stream.WriteByte(Convert.ToByte(dataLength));
+                //Записываем данные о изображении в поток
                 stream.Write(imgData, 0, dataLength);
+                //Считываем новый размер блока изображения
                 dataLength = sourceGif.ReadByte();
             }
-
+            //Завершаем блок изображения
             stream.WriteByte(0);
 
         }
